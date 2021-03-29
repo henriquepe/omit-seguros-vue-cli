@@ -27,6 +27,7 @@
         <p class="data-proposta">09/02/2021 15:15</p>
       </button>
     </div>
+    <inModal v-show="isInModalVisible" @close="closeInModal"/>
     <modalLogin v-show="isModalVisible"
       @close="closeModal"/>
   </div>
@@ -36,6 +37,7 @@
 import Vue from "vue";
 import Menu from "../components/Menu.vue";
 import Modal from "../components/Modal.vue";
+import inModal from '../components/InModal.vue';
 
 import store from "../store/index";
 
@@ -43,13 +45,16 @@ export default Vue.extend({
   name: "Atendimento",
   components: {
     "menu-component": Menu,
-    "modalLogin": Modal
+    "modalLogin": Modal,
+    "inModal": inModal
   },
   data() {
     return {
       isOpen: true,
       state: store.state,
       isModalVisible: false,
+      inModal: false,
+      isInModalVisible: false
     };
   },
   created(){
@@ -63,7 +68,27 @@ export default Vue.extend({
       this.$router.replace({ path: "/chat" });
     },
     closeModal() {
+
+
+
+      setTimeout(() => {
         this.isModalVisible = false;
+
+
+      }, 2000)
+
+      setTimeout(() => {
+        this.openInModal();
+      }, 2000)
+
+
+
+    },
+    closeInModal(){
+      this.isInModalVisible = false
+    },
+    openInModal(){
+      this.state.loginState ? this.isInModalVisible = true : this.isModalVisible = true
     },
 
     async getAtendimento(){

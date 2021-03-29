@@ -7,7 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     baseURL: 'https://flt-sas-hml.omintseguros.com.br/api/SASData/Get_V2/',
-    baseURLSrv: 'http://srvseg-homolog.omintseguroviagem.com.br:9600/api/SASData/Get_V2',
+    baseURLSrv: 'https://app-sas-hml.omintseguros.com.br/api/SASData/Get_V2',
     userData: {
       cpf: '',
       data: null||'',
@@ -21,8 +21,10 @@ export default new Vuex.Store({
     bilhete: '',
     reemissaoBilhete: '',
     nome: '',
+    erro: '',
     arrayValue:0,
-    atendimento: []
+    atendimento: [],
+    nomeUsuario: ''
   },
   mutations: {
     async login (state){
@@ -71,6 +73,19 @@ export default new Vuex.Store({
             }
           ]
         })
+
+
+        console.log(ticketsResponse.data.ResponseJSONData[0].nome)
+
+        state.nomeUsuario = ticketsResponse.data.ResponseJSONData[0].nome;
+
+        if(ticketsResponse.data.ResponseJSONData === "" || ticketsResponse.data.ResponseCode === 999){
+
+
+          state.erro = 'Dados inválidos, por favor verifique as informações e envie novamente.'
+
+        }
+
         if(ticketsResponse.data.ResponseJSONData){
           state.tickets = ticketsResponse.data.ResponseJSONData;
           state.nome = ticketsResponse.data.ResponseJSONData[0].nome
@@ -83,36 +98,19 @@ export default new Vuex.Store({
     },
     async atendimento(state){
       const abrirAtendimento = await axios.post(state.baseURLSrv, {
-        "SessionID":state.sessionData.sessionID,
+        "SessionID": state.sessionData.sessionID,
         "screenIdentification":"SASCC0010",
-        "Parameters":
-        [
-          {
-            "parametername":"tp_operacao",
-            "parametervalue":"I"
-          },
-          {
-            "parametername":"id_canal",
-            "parametervalue":"6"
-          },
-          {
-            "parametername":"ds_nome",
-            "parametervalue":""
-          },
-          {
-            "parametername":"nr_documento",
-            "parametervalue":""
-          },
-          {
-            "parametername":"tp_documento",
-            "parametervalue":"CPF"
-          },
-          {
-            "parametername":"cd_usuario",
-            "parametervalue":"0"
-          }
-        ]
-      })
+         "Parameters": [
+             {"parametername":"tp_operacao", "parametervalue":"I"},
+             {"parametername":"id_canal", "parametervalue":"6"},
+             {"parametername":"ds_nome", "parametervalue":""},
+             {"parametername":"nr_documento", "parametervalue": state.userData.cpf},
+             {"parametername":"tp_documento", "parametervalue":"CPF"},
+             {"parametername":"id_filial", "parametervalue":"1"},
+             {"parametername":"cd_usuario", "parametervalue":""}
+         ]
+ 
+       })
       if(abrirAtendimento.data.ResponseJSONData){
         state.atendimento = abrirAtendimento.data.ResponseJSONData;
       }
@@ -129,55 +127,24 @@ export default new Vuex.Store({
         // @ts-ignore
         console.log(att.id_atendimento)
 
-        const responseReq = await axios.post('http://srvseg-homolog.omintseguroviagem.com.br:9600/api/SASData/Get_V2', {
-          "SessionID": state.sessionData.sessionID,
-          "screenIdentification":"SASCC0011",
-          "Parameters":
-          [
-            {
-              "parametername":"tp_operacao",
-              "parametervalue":"I"
-            },
-            {
-              "parametername":"id_atendimento",
-              // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-              // @ts-ignore
-              "parametervalue": att.id_atendimento
-            },
-            {
-              "parametername":"id_canal",
-              "parametervalue":"6"
-            },
-            {
-              "parametername":"cd_cliente",
-              "parametervalue":null
-            },
-            {
-              "parametername":"ds_nome",
-              "parametervalue":""
-            },
-            {
-              "parametername":"nr_documento",
-              "parametervalue":"780.380.700-38"
-            },
-            {
-              "parametername":"tp_documento",
-              "parametervalue":"CPF"
-            },
-            {
-              "parametername":"id_classifica",
-              "parametervalue":5982
-            },
-            {
-              "parametername":"ds_obs",
-              "parametervalue":"teste"
-            },
-            {
-              "parametername":"cd_usuario",
-              "parametervalue":"1"
-            }
-          ]
-        })
+        const {id_atendimento}: any = att;
+
+        const responseReq = await axios.post('https://app-sas-hml.omintseguros.com.br/api/SASData/Get_V2', {
+        "SessionID": state.sessionData.sessionID,
+        "screenIdentification":"SASCC0011",  
+        "Parameters": [ 
+        {"parametername":"tp_operacao", "parametervalue":"I"}, 
+        {"parametername":"id_atendimento", "parametervalue": id_atendimento}, 
+        {"parametername":"id_canal", "parametervalue":"6"}, 
+        {"parametername":"cd_cliente", "parametervalue":""}, 
+        {"parametername":"ds_nome", "parametervalue":""}, 
+        {"parametername":"nr_documento", "parametervalue": ""}, 
+        {"parametername":"tp_documento", "parametervalue":"CPF"}, 
+        {"parametername":"id_classifica", "parametervalue":"2593"}, 
+        {"parametername":"ds_obs", "parametervalue":""}, 
+        {"parametername":"id_filial", "parametervalue":"3"}, 
+        {"parametername":"cd_usuario", "parametervalue":""} 
+     ]  })
 
         console.log(responseReq.data)
       }

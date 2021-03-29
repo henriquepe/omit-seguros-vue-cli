@@ -3,37 +3,57 @@
     <div class="modal">
         <h1>Login</h1>
         <p class="pStyle">CPF</p>
-        <input class="inputStyle" v-model="cpf" placeholder="Digite seu CPF">
+        <input class="inputStyle" v-model="cpf">
         <p class="pStyle">Data de inicio da viagem</p>
         <date-picker class="dateStyle" v-model="dataViagem" :formatter="momentFormat" :lang="lang"></date-picker>
+
+         <div id="erro">
+          <p v-show="erro">{{this.erro}}</p>
+        </div>
+        <div v-show="this.loader" id="loader">
+          <vue-loaders-ball-beat color="#00316B"></vue-loaders-ball-beat>
+        </div>
         <button class="buttonStyle" @click="submitLogin">Entrar</button>
     </div>
   </div>
 </template>
 
 <script>
+  import 'vue-loaders/dist/vue-loaders.css';
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/pt-br';
   import store from "../store/";
   import  moment from "moment";
+  import Vue from 'vue';
+  import VueLoaders from 'vue-loaders';
+
+  Vue.use(VueLoaders);
+
   export default {
     name: 'modal',
     components: {
       DatePicker,
+
     },
     data(){
       return {
         dataViagem: null,
         cpf: null,
         state: store.state,
+        erro: '',
+        loader: false,
         momentFormat: {
       //[optional] Date to String
       stringify: (date) => {
+        console.log('data:' + date)
+
+        console.log('parsedData: ' + moment(date).format('DD/MM/YYYY'))
         return date ? moment(date).format('DD/MM/YYYY') : ''
       },
       //[optional]  String to Date
       parse: (value) => {
+        console.log('value:' + value)
         return value ? moment(value, 'DD/MM/YYYY').toDate() : null
       },
     }
@@ -42,28 +62,66 @@
 
     methods: {
       async submitLogin(){
-        const data = await moment(this.dataViagem).format('YYYY/MM/DD')
+        const data = moment(this.dataViagem).format('YYYY/MM/DD')
+        console.log('final:' + data)
         this.state.userData.data = data
         const cpf = await this.cpf
         this.state.userData.cpf = cpf
 
-        await store.commit("login");
+        store.commit("login");
 
         const isUserOn = this.state.loginState;
+        this.loader = true;
+        this.handleErrors();
         this.close()
 
       },
       close() {
         this.$emit('close');
       },
+      handleErrors(){
+
+        setTimeout(() => {
+          if(this.state.erro){
+            this.loader = false;
+            this.erro = this.state.erro;
+          }
+
+        }, 5000)
+
+      }
     },
   };
 </script>
 
 <style>
   h1{
-    color:#00316B
+    color:#00316B;
   }
+
+  #erro{
+    font-size: 14px;
+    margin: 0 auto;
+    width: 60%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  #erro p {
+    width: 100%;
+    color: red;
+    font-weight: bold;
+    padding-top: 10px;
+
+  }
+
+  #loader {
+    margin-top: 40px;
+  }
+
   .inputStyle{
     width: 100%;
     text-indent: 10px;
@@ -80,10 +138,9 @@
     right: 0;
     background-color: rgba(0, 0, 0, 0.3);
     display: flex;
+    z-index: 1;
     justify-content: center;
     align-items: center;
-    z-index: 1;
-    position: absolute;
   }
 
   .modal {
@@ -92,13 +149,13 @@
     align-content: center;
     flex-direction: column;
     background: white;
-    padding:20px 10px;
+    padding:20px;
     border-radius:10px;
+    width: 370px;
     min-width: 70%;
-
   }
 
-  @media only screen and (min-width: 600px) {
+   @media only screen and (min-width: 600px) {
     .modal {
       min-width: 40%;
       z-index: 0;

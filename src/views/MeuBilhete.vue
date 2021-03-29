@@ -29,6 +29,7 @@
       </div>
 
     </div>
+    <inModal v-show="isInModalVisible" @close="closeInModal"/>
     <modalLogin v-show="isModalVisible"
       @close="closeModal"/>
   </div>
@@ -36,6 +37,8 @@
 </template>
 
 <script lang="ts">
+
+
 
 interface BilheteProps {
   bilhete: string;
@@ -46,7 +49,7 @@ interface BilheteProps {
 import Vue from "vue";
 import Menu from "../components/Menu.vue";
 import store from "../store/";
-
+import inModal from '../components/InModal.vue';
 import Modal from "../components/Modal.vue";
 import  moment from "moment";
 
@@ -54,7 +57,8 @@ export default Vue.extend({
   name: "Meu Bilhete",
   components: {
     "menu-component": Menu,
-    "modalLogin": Modal
+    "modalLogin": Modal,
+    "inModal": inModal
   },
   created(){
     if(!this.state.loginState){
@@ -78,7 +82,27 @@ export default Vue.extend({
 
     },
     closeModal() {
+
+
+
+      setTimeout(() => {
         this.isModalVisible = false;
+
+
+      }, 2000)
+
+      setTimeout(() => {
+        this.openInModal();
+      }, 2000)
+
+
+
+    },
+    closeInModal(){
+      this.isInModalVisible = false
+    },
+    openInModal(){
+      this.state.loginState ? this.isInModalVisible = true : this.isModalVisible = true
     },
   },
 
@@ -90,6 +114,8 @@ export default Vue.extend({
       urlTicket: "",
       moment: moment,
       isModalVisible: false,
+      inModal: false,
+      isInModalVisible: false
     };
   },
   // updated: function() {
@@ -155,7 +181,7 @@ h6 {
   color: #fff;
   font-size: 16px;
   font-weight: bold;
-  background-color: #286bbb;
+  background-color: #00316B;
   transition: opacity 0.2s;
 }
 

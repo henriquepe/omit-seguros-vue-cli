@@ -7,8 +7,12 @@
         src="../assets/omint-viagem.png"
         alt="Seleto viagem"
       />
-      <a @click.prevent="showModal('login')" class="login-button padding-Style">
-        LOGIN
+      <a @click.prevent="showModal('login')" v-if="this.state.nomeUsuario" class="login-button padding-Style">
+        {{this.state.nomeUsuario}}
+      </a>
+
+      <a @click.prevent="showModal('login')" v-if="!this.state.nomeUsuario" class="login-button padding-Style">
+        Login
       </a>
     </div>
 
@@ -42,10 +46,10 @@ export default Vue.extend({
   methods: {
     showModal(value) {
       if(value === 'meubilhete'){
-        this.$router.push('meubilhete');
+        this.$router.push('/');
       }
       else if(value === 'atendimento'){
-        this.$router.push('/');
+        this.$router.push('/atendimento');
       }
       else if(value === 'novidades'){
         this.$router.push('novidades');
