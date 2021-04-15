@@ -1,6 +1,6 @@
 <template>
   <div v-if="modal" class="modal-backdrop">
-    <div class="modal">
+    <div v-show="responseChamado === ''" class="modal">
       <h1>Quero que me ligue</h1>
       <p class="pStyle">Telefone completo</p>
       <input class="inputStyle" v-model="telefone">
@@ -10,8 +10,18 @@
       <div v-show="loader" id="loader">
         <vue-loaders-ball-beat color="#00316B"></vue-loaders-ball-beat>
       </div>
-      <button v-bind:disabled="telefone" class="buttonStyle" @click="submitCall">Enviar</button>
+      <button v-bind:disabled="telefone === null " class="buttonStyle" @click="submitCall">Enviar</button>
       <button class="cancelButtonStyle" @click="close">Cancelar</button>
+    </div>
+    <div v-show="responseChamado !== ''" class="modal">
+      <h1>Registro criado!</h1>
+      <p class="pStyle">
+        {{showResponse}}
+      </p>
+      <div v-show="loader" id="loader">
+        <vue-loaders-ball-beat color="#00316B"></vue-loaders-ball-beat>
+      </div>
+      <button v-bind:disabled="telefone === null " class="buttonStyle" @click="close">Fechar</button>
     </div>
   </div>
 </template>
@@ -21,9 +31,9 @@
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/pt-br';
   import store from "../store/";
-  import  moment from "moment";
   import Vue from 'vue';
   import VueLoaders from 'vue-loaders';
+  import {criarChamado} from '../utils/api'
 
 
   Vue.use(VueLoaders);
@@ -39,20 +49,8 @@
         loader: false,
         modal: true,
         sessionid: '',
-        momentFormat: {
-      //[optional] Date to String
-      stringify: (date) => {
-        console.log('data:' + date)
-
-        console.log('parsedData: ' + moment(date).format('DD/MM/YYYY'))
-        return date ? moment(date).format('DD/MM/YYYY') : ''
-      },
-      //[optional]  String to Date
-      parse: (value) => {
-        console.log('value:' + value)
-        return value ? moment(value, 'DD/MM/YYYY').toDate() : null
-      },
-    }
+        responseChamado:'',
+        showResponse:'',
       }
     },
 
@@ -60,6 +58,16 @@
       async submitCall(){
         console.log("telefone",this.telefone);
         this.loader = true;
+        this.responseChamado = await criarChamado(this.telefone);
+        console.log('this.responseChamado',this.responseChamado)
+        if(this.responseChamado !== ''){
+          this.showResponse = `Seu chamado com o numero ${this.responseChamado} foi criado, por favor aguarde
+        que entraremos em contato`;
+          this.loader = false;
+        }
+        else{
+          this.showResponse = 'Infelizmente não foi possivel enviar sua solicitação, por favor, tente mais tarde'
+        }
       },
       close() {
         this.modal = false;

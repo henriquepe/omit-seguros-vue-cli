@@ -16,7 +16,7 @@
       <div v-for="mensagensGravadas in mensagens" :key="mensagensGravadas" class="mensagem-cliente">
         <strong class="nome-chat">Você</strong>
         <p class="mensagem-chat">{{mensagensGravadas}}</p>
-        <p class="data-chat">09/02/2021 15:15</p>
+        <p class="data-chat">{{dateNow}}</p>
       </div>
 
     </div>
@@ -33,6 +33,7 @@
 import Vue from 'vue';
 import store from "../store/index";
 import axios from 'axios'
+import moment from 'moment'
 
 
   export default Vue.extend({
@@ -45,17 +46,35 @@ import axios from 'axios'
     };
   },
 
-
+  computed:{
+    dateNow: () => {
+      return moment().format('DD/MM/YYYY h:mm')
+    },
+  },
   methods: {
     handleChangePage(){
       this.$router.replace({ path: "/atendimento", name: 'Atendimento' });
     },
 
-    adicionarMensagem(){
-
-
+    async adicionarMensagem(){
 
       this.mensagens.push(this.mensagem);
+
+      await axios.post(store.state.baseURLSrv, {
+
+        "SessionID": store.state.sessionData.sessionID,
+        "screenIdentification": "SASSA56",
+          "Parameters": [
+            {"parametername": "ve_id_atendimento","parametervalue": "0"},
+            {"parametername": "ve_id_chamado","parametervalue": store.state.atendimento},
+            {	"parametername": "ve_cd_operador","parametervalue": "1053"},
+            {"parametername": "ve_ds_obs",
+            "parametervalue": `${this.mensagem}`},
+
+            {"parametername": "ve_at_externo","parametervalue": "S"}
+          ]
+      })
+
 
       console.log(this.mensagens);
 
@@ -69,10 +88,9 @@ import axios from 'axios'
 
   async created() {
 
-      localStorage.setItem('@mensagens-usuario', JSON.stringify([]))
+      this.mensagem = 'Solicito atendimento via app';
 
-      this.adicionarMensagem()
-
+      this.mensagens.push(this.mensagem);
 
       const response = await axios.post(store.state.baseURLSrv, {
 
@@ -129,27 +147,24 @@ import axios from 'axios'
 
       })
 
-
       store.state.atendimento = response.data.ResponseJSONData[0].Column1;
 
+      await axios.post(store.state.baseURLSrv, {
+
+        "SessionID": store.state.sessionData.sessionID,
+        "screenIdentification": "SASSA56",
+          "Parameters": [
+            {"parametername": "ve_id_atendimento","parametervalue": "0"},
+            {"parametername": "ve_id_chamado","parametervalue": store.state.atendimento},
+            {	"parametername": "ve_cd_operador","parametervalue": "1053"},
+            {"parametername": "ve_ds_obs",
+            "parametervalue": `${this.mensagem}`},
+
+            {"parametername": "ve_at_externo","parametervalue": "S"}
+          ]
+      })
 
 
-
-    const mensagensLocal = localStorage.getItem(('@mensagens-usuario'));
-
-    console.log(this.mensagens)
-
-    if(mensagensLocal){
-
-      this.mensagens = JSON.parse(mensagensLocal);
-      return;
-    }
-
-    else {
-
-
-      return;
-    }
 
   }
 
@@ -290,8 +305,10 @@ import axios from 'axios'
   display: flex;
   align-items: center;
   padding-top:10px;
-  padding-bottom:10px
-
+  padding-bottom:10px;
+  background:transparent;
+  border-width: 0px;
+  color:white;
 }
 
 .voltar-menu p {
