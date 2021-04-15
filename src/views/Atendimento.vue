@@ -11,25 +11,14 @@
         <p class="withoutPadding">Iniciar novo atendimento</p>
       </button>
     </div>
-    <div v-if="state.loginState && state.atendimento" class="bilhete-container">
-      <button
-        v-for="(item, index) in state.atendimento"
-        v-bind:key="index"
-        v-on:click="handleChangePage"
-        class="bilhete-box"
-      >
-        <p class="numero-proposta">Bilhete nº 1234566789987654</p>
-        <p class="numero-proposta">Protocolo nº {{item.id_atendimento}}</p>
-        <p class="dados-proposta">Demanda: Solicitação</p>
-        <p class="dados-proposta">Assunto: Atendimento viagem app</p>
-        <p class="dados-proposta">Status: <strong>Em andamento</strong></p>
 
-        <p class="data-proposta">09/02/2021 15:15</p>
-      </button>
-    </div>
     <inModal v-show="isInModalVisible" @close="closeInModal"/>
     <modalLogin v-show="isModalVisible"
       @close="closeModal"/>
+
+
+
+
   </div>
 </template>
 
@@ -39,7 +28,9 @@ import Menu from "../components/Menu.vue";
 import Modal from "../components/Modal.vue";
 import inModal from '../components/InModal.vue';
 
+
 import store from "../store/index";
+
 
 export default Vue.extend({
   name: "Atendimento",
@@ -55,6 +46,7 @@ export default Vue.extend({
       isModalVisible: false,
       inModal: false,
       isInModalVisible: false
+
     };
   },
   created(){
@@ -69,31 +61,32 @@ export default Vue.extend({
     },
     closeModal() {
 
+      this.isModalVisible = false;
 
-
-      setTimeout(() => {
-        this.isModalVisible = false;
-
-
-      }, 2000)
-
-      setTimeout(() => {
-        this.openInModal();
-      }, 2000)
-
+      this.isModalVisible === false ? this.openInModal() : '';
 
 
     },
     closeInModal(){
+
       this.isInModalVisible = false
+
     },
     openInModal(){
       this.state.loginState ? this.isInModalVisible = true : this.isModalVisible = true
     },
 
-    async getAtendimento(){
-      console.log('atendimento')
-      await store.commit("atendimento");
+    getAtendimento(){
+      this.$router.replace({ path: '/chat' })
+    },
+
+    InModal(){
+      if(this.state.loginState){
+        return true;
+      }
+      else {
+        return false;
+      }
     }
   },
 });
@@ -201,6 +194,4 @@ input {
   align-items: center;
   cursor: not-allowed;
 }
-
-
 </style>

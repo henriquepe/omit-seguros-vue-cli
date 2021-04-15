@@ -22,12 +22,53 @@
     </div>
       <modalLogin v-show="isModalVisible"
       @close="closeModal"/>
+      
+      <callModal v-show="callModal" />
+
+      <div class="abrir-atendimento">
+        <div @click="atendimentos = !atendimentos" class="quadrado-menor"> 
+          <p>Atendimento</p>
+          <strong>Médico/Odontológico</strong>
+        </div>
+        <transition name="fade">
+          <div v-bind:class="atendimentos ? 'conteudo-atendimento' : 'conteudo-atendimento-reverso' ">
+
+            <a href="tel:08007273002" v-bind:class="atendimentos ? 'botao-atendimento-estilo' : 'botao-atendimento-estilo-reverso' ">
+              <p>No Brasil</p>
+              <p>0800 727 3002 <span>l</span></p>
+            </a>
+
+            <a href="tel:00551121324278" v-bind:class="atendimentos ? 'botao-atendimento-estilo' : 'botao-atendimento-estilo-reverso' ">
+              <p>No Exterior</p>
+              <p>00 55 11 21324278 <span>l</span></p>
+            </a>
+
+            <a v-on:click="showCallModal" v-bind:class="atendimentos ? 'botao-atendimento-estilo' : 'botao-atendimento-estilo-reverso' ">
+              <div style="display: flex; flex-direction: column;">
+                <p>No Brasil<br>No Exterior</p>
+              </div>
+              <p>Quero que me ligue<span>l</span></p>
+            </a>
+            
+            
+              <a v-on:click="goToChat" v-bind:class="atendimentos ? 'botao-atendimento-estilo' : 'botao-atendimento-estilo-reverso' ">
+                <div style="display: flex; flex-direction: column;">
+                  <p>No Brasil<br>No Exterior</p>
+                </div>
+                <p>Por mensagem<span>l</span></p>
+              </a>
+            
+          </div>
+        </transition>
+        
+    </div>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
 import Modal from "./Modal";
+import CallModal from "./CallModal";
 import store from "../store/";
 
 export default Vue.extend({
@@ -37,13 +78,28 @@ export default Vue.extend({
       pageOn: "",
       state: store.state,
       isModalVisible: false,
+      atendimentos: false,
+      callModal: false
     }
   },
   components: {
-    "modalLogin": Modal
+    "modalLogin": Modal,
+    "callModal": CallModal
   },
 
   methods: {
+
+    getUsernameFromStore(){
+
+      setTimeout(() => {
+
+        return store.state.nomeUsuario;
+
+
+      }, 2000)
+
+    },
+
     showModal(value) {
       if(value === 'meubilhete'){
         this.$router.push('/');
@@ -61,8 +117,20 @@ export default Vue.extend({
       }
     },
 
+    showCallModal(){
+      this.callModal = true
+    },
+
     closeModal() {
         this.isModalVisible = false;
+    },
+
+    goToChat(){
+
+      store.commit('atendimento');
+
+      this.$router.replace({ path: '/chat' });
+
     }
   },
 });
@@ -91,7 +159,7 @@ export default Vue.extend({
 }
 
 .logo-seleto {
-  max-width: 40%;
+  max-width: 10%;
   text-align: center;
   align-items: center;
 }
@@ -103,7 +171,10 @@ export default Vue.extend({
   top: 16px;
   font-family: "Roboto", sans-serif;
   font-size: 12px;
-  color:white
+  color:white;
+
+
+
 }
 
 #question-circle-icon {
@@ -135,4 +206,119 @@ export default Vue.extend({
     max-width: 80% !important;
   }
 }
+
+.abrir-atendimento {
+  width: 100%;
+  bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  position: fixed;
+  margin-left:-50px
+}
+
+.abrir-atendimento .quadrado-menor {
+  cursor: pointer;
+  background: #00316B;
+  width: 70%;
+  height: 80px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-width: 1px;
+  border-color: #000;
+
+}
+
+.abrir-atendimento .quadrado-menor p {
+
+  color: #fff;
+  font-size: 14px;
+
+}
+
+.abrir-atendimento .quadrado-menor strong {
+
+  color: #fff;
+  font-size: 15px;
+
+}
+
+.abrir-atendimento .conteudo-atendimento {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background: #00316B;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  transition: .8s;
+}
+
+.botao-atendimento-estilo {
+  display: flex;
+  justify-content: space-between;
+  padding:0px 15px;
+  width: 70%;
+  height: 70px;
+  background: #A19062;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  margin-bottom:15px;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao-atendimento-estilo p {
+
+  color: #fff;
+  font-size: 16px;
+  margin: 0;
+}
+
+.botao-atendimento-estilo-reverso {
+  display: flex;
+  justify-content: space-between;
+  padding:5px 15px;
+  width: 80%;
+  background: #A19062;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  margin-bottom:15px;
+
+  overflow: hidden;
+  --prefix-animation: slide 1s ease 7.5s forwards;
+}
+
+
+.conteudo-atendimento-reverso{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 0;
+  background: #00316B;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+
+  overflow: hidden;
+  --prefix-animation: slide 1s ease 7.5s forwards;
+
+  
+}
+
+@-prefix-keyframes slide {
+
+  from { height: 0; }
+  to { height: 100%;  }
+
+}
+
+
 </style>

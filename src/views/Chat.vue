@@ -3,45 +3,27 @@
 
     <div>
       <div class="chat-header">
-        <a class="voltar-menu" v-on:click="handleChangePage">Voltar</a>
+        <button class="voltar-menu" v-on:click="$router.replace( { name: 'Atendimento' } )">Voltar</button>
       </div>
 
       <div class="chat-proposta">
-        <p>Número: {{this.state.atendimento[0].id_atendimento}}</p>
+        <p>Número: {{this.state.atendimento !== null ? this.state.atendimento : ""}}</p>
       </div>
     </div>
 
-    <!-- <div class="conversa-chat-atendente">
-      <div class="mensagem-atendente">
-        <strong class="nome-chat">Atendente Vanderlei</strong>
-        <p class="mensagem-chat">geo localização</p>
-        <p class="data-chat">09/02/2021 15:15</p>
-      </div>
+    <div class="conversa-chat-atendente">
 
-
-      <div class="mensagem-cliente">
+      <div v-for="mensagensGravadas in mensagens" :key="mensagensGravadas" class="mensagem-cliente">
         <strong class="nome-chat">Você</strong>
-        <p class="mensagem-chat">geo localização</p>
+        <p class="mensagem-chat">{{mensagensGravadas}}</p>
         <p class="data-chat">09/02/2021 15:15</p>
       </div>
 
-
-      <div class="mensagem-atendente">
-        <strong class="nome-chat">Atendente Vanderlei</strong>
-        <p class="mensagem-chat">geo localização</p>
-        <p class="data-chat">09/02/2021 15:15</p>
-      </div>
-
-      <div class="mensagem-cliente">
-        <strong class="nome-chat">Você</strong>
-        <p class="mensagem-chat">geo localização</p>
-        <p class="data-chat">09/02/2021 15:15</p>
-      </div>
-    </div> -->
+    </div>
 
     <div class="input-chat">
-      <input placeholder="Digite sua mensagem" type="text">
-      <button>Enviar</button>
+      <input placeholder="Digite sua mensagem" v-model="mensagem"  type="text">
+      <button v-on:click="adicionarMensagem">Enviar</button>
     </div>
   </div>
 </template>
@@ -50,6 +32,7 @@
 
 import Vue from 'vue';
 import store from "../store/index";
+import axios from 'axios'
 
 
   export default Vue.extend({
@@ -57,15 +40,118 @@ import store from "../store/index";
   data() {
     return {
       state: store.state,
+      mensagens: [],
+      mensagem: 'Solicito atendimento via app'
     };
   },
 
 
   methods: {
     handleChangePage(){
-      this.$router.replace({ path: "/" });
+      this.$router.replace({ path: "/atendimento", name: 'Atendimento' });
+    },
+
+    adicionarMensagem(){
+
+
+
+      this.mensagens.push(this.mensagem);
+
+      console.log(this.mensagens);
+
+      this.mensagem = ''
+
+      localStorage.setItem('@mensagens-usuario', JSON.stringify(this.mensagens));
+
+
     }
   },
+
+  async created() {
+
+      localStorage.setItem('@mensagens-usuario', JSON.stringify([]))
+
+      this.adicionarMensagem()
+
+
+      const response = await axios.post(store.state.baseURLSrv, {
+
+        "SessionID": store.state.sessionData.sessionID,
+        "screenIdentification": "SASSA55",
+        "Parameters": [
+          {
+
+          "parametername": "tp_operacao",
+
+          "parametervalue": "I"
+
+          },
+          {
+
+          "parametername": "id_atendimento",
+
+          "parametervalue": "0"
+
+          },
+          {
+
+          "parametername": "id_canal",
+
+          "parametervalue": "13"
+
+          },
+          {
+
+          "parametername": "cd_cliente",
+
+          "parametervalue": "1576362"
+
+          },
+          {
+
+          "parametername": "id_classifica",
+          "parametervalue": "5982"
+
+          },
+          {
+
+          "parametername": "ds_obs",
+          "parametervalue": "solicito atendimento via app"
+
+          },
+          {
+
+          "parametername": "cd_usuario",
+          "parametervalue": "1053"
+
+          }
+        ]
+
+      })
+
+
+      store.state.atendimento = response.data.ResponseJSONData[0].Column1;
+
+
+
+
+    const mensagensLocal = localStorage.getItem(('@mensagens-usuario'));
+
+    console.log(this.mensagens)
+
+    if(mensagensLocal){
+
+      this.mensagens = JSON.parse(mensagensLocal);
+      return;
+    }
+
+    else {
+
+
+      return;
+    }
+
+  }
 
 
 })
@@ -119,6 +205,8 @@ import store from "../store/index";
   -moz-box-shadow: 0px 0px 35px -9px rgba(0,0,0,0.25);
   box-shadow: 0px 0px 35px -9px rgba(0,0,0,0.25);
   display: flex;
+  position: fixed;
+  bottom: 0;
 
 }
 
@@ -143,6 +231,10 @@ import store from "../store/index";
 
   padding: 30px;
 
+  height: 100%;
+
+  padding-bottom: 300px;
+
 }
 
 .mensagem-atendente {
@@ -156,6 +248,9 @@ import store from "../store/index";
   margin-left: 30px;
 
   margin-top: 20px;
+
+
+
 
 
 }
@@ -179,11 +274,14 @@ import store from "../store/index";
   -moz-box-shadow: 0px 0px 35px -9px rgba(0,0,0,0.25);
   box-shadow: 0px 0px 35px -9px rgba(0,0,0,0.25);
 
-  padding: 10px;
+  padding: 20px;
 
-  margin-right: 30px;
+  margin-left: 90px;
 
-  margin-top: 20px;
+  text-align: left;
+
+  margin-bottom: 25px;
+
 
 }
 

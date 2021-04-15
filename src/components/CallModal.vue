@@ -1,46 +1,39 @@
 <template>
   <div v-if="modal" class="modal-backdrop">
     <div class="modal">
-        <h1>Login</h1>
-        <p class="pStyle">CPF</p>
-        <input class="inputStyle" v-model="cpf">
-        <p class="pStyle">Data de inicio da viagem</p>
-        <date-picker class="dateStyle" v-model="dataViagem" :formatter="momentFormat" :lang="lang"></date-picker>
-
-         <div id="erro">
-          <p v-show="erro">{{erro}}</p>
-        </div>
-        <div v-show="loader" id="loader">
-          <vue-loaders-ball-beat color="#00316B"></vue-loaders-ball-beat>
-        </div>
-        <button class="buttonStyle" @click="submitLogin">Entrar</button>
+      <h1>Quero que me ligue</h1>
+      <p class="pStyle">Telefone completo</p>
+      <input class="inputStyle" v-model="telefone">
+        <div id="erro">
+        <p v-show="erro">{{erro}}</p>
+    </div>
+      <div v-show="loader" id="loader">
+        <vue-loaders-ball-beat color="#00316B"></vue-loaders-ball-beat>
+      </div>
+      <button v-bind:disabled="telefone" class="buttonStyle" @click="submitCall">Enviar</button>
+      <button class="cancelButtonStyle" @click="close">Cancelar</button>
     </div>
   </div>
 </template>
 
 <script>
   import 'vue-loaders/dist/vue-loaders.css';
-  import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/pt-br';
   import store from "../store/";
   import  moment from "moment";
   import Vue from 'vue';
   import VueLoaders from 'vue-loaders';
-  import axios from 'axios';
+
 
   Vue.use(VueLoaders);
 
   export default {
     name: 'modal',
-    components: {
-      DatePicker,
-
-    },
     data(){
       return {
         dataViagem: null,
-        cpf: null,
+        telefone: null,
         state: store.state,
         erro: '',
         loader: false,
@@ -64,84 +57,12 @@
     },
 
     methods: {
-      async submitLogin(){
-
-          this.loader = true;
-          const data = moment(this.dataViagem).format('YYYY/MM/DD')
-
-          
-          const responseToken = await axios.post(store.state.baseURLSrv, {
-            "screenIdentification":"SASVI0055", 
-            "Parameters":[ 
-              {"parametername": "cd_Corretor", "parametervalue": "usrpadrao360"},
-              {"parametername": "Senha", "parametervalue": "Omint2018"}
-            ]
-          });
-
-          const { Token } = JSON.parse(responseToken.data.ResponseJSONData);         
-
-          const responseSessionId = await axios.post(store.state.baseURLSrv,{
-
-            "userToken": `${Token}`,
-            "screenIdentification":"SASVI0056"
-
-          });
-
-          const { SessionID } = JSON.parse(responseSessionId.data.ResponseJSONData);
-
-          console.log(SessionID)
-
-          this.sessionid = SessionID;
-
-
-          store.state.sessionData.token = Token;
-          store.state.sessionData.sessionID = SessionID;
-
-
-          const ticketsResponse = await axios.post(store.state.baseURLSrv, {
-            "SessionID": this.sessionid,
-            "screenIdentification":"SASVJ0145",
-            "Parameters":
-            [
-              {
-                "parametername":"nr_cpf",
-                "parametervalue": this.cpf
-              },
-              {
-                "parametername":"dt_nascimento",
-                "parametervalue": data
-              }
-            ]}
-          )
-
-          console.log(ticketsResponse.data.ResponseJSONData.length)
-
-
-          if(ticketsResponse.data.ResponseJSONData.length <= 0){
-
-            console.log(' cheguei aqui certo')
-
-
-            store.state.erro = 'Dados inválidos, por favor verifique as informações e envie novamente.'
-            this.loader = false;
-
-            this.erro = 'Dados inválidos, por favor verifique as informações e envie novamente.';
-
-
-
-          }
-          else {
-            store.state.nomeUsuario = ticketsResponse.data.ResponseJSONData[0].nome;
-            store.state.tickets = ticketsResponse.data.ResponseJSONData;
-            store.state.nome = ticketsResponse.data.ResponseJSONData[0].nome
-            store.state.loginState = true;
-            this.modal = false;            
-          } 
-
-
+      async submitCall(){
+        console.log("telefone",this.telefone);
+        this.loader = true;
       },
       close() {
-        this.$emit('close');
+        this.modal = false;
       },
 
     },
@@ -192,7 +113,7 @@
     right: 0;
     background-color: rgba(0, 0, 0, 0.3);
     display: flex;
-    z-index: 1;
+    z-index: 10 !important;
     justify-content: center;
     align-items: center;
   }
@@ -264,6 +185,21 @@
   background:#00316B;
   border-radius: 5px;
   color:white;
+  font-size:18px;
+}
+.cancelButtonStyle{
+  padding: 15px;
+  border-width: 1px;
+  border-color: #00316B;
+  -webkit-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.25);
+  -moz-box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.25);
+  box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.25);
+  margin-top:50px;
+  margin-left: 20px;
+  margin-right:20px;
+  background:transparent;
+  border-radius: 5px;
+  color:#00316B;
   font-size:18px;
 }
 
