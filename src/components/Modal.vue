@@ -4,7 +4,7 @@
         <h1>Login</h1>
         <p class="pStyle">CPF</p>
         <input class="inputStyle" v-model="cpf">
-        <p class="pStyle">Data de inicio da viagem</p>
+        <p class="pStyle">Data de nascimento</p>
         <date-picker class="dateStyle" v-model="dataViagem" :formatter="momentFormat" :lang="lang"></date-picker>
 
          <div id="erro">

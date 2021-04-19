@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.50ba5d2ba1e75354ad2eefc7a52e6441.js"
+  "/precache-manifest.8bdb9748de20346ab146f16b68ac3519.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "omintseguros"});
