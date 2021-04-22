@@ -1,7 +1,9 @@
 <template>
-  <div class="chat-container">
-
-    <div>
+<div class="principal">
+  <vue-loaders-ball-beat id="loader" v-if="loader" color="#00316B"></vue-loaders-ball-beat>
+  <h1 id="mensagem-loader" v-if="loader">Estamos gerando seu atendimento....</h1>
+  <div style="overflow: auto;" v-if="!loader" class="chat-container">
+    <div >
       <div class="chat-header">
         <button class="voltar-menu" v-on:click="$router.replace( { name: 'Atendimento' } )">Voltar</button>
       </div>
@@ -26,6 +28,7 @@
       <button v-on:click="adicionarMensagem">Enviar</button>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -34,6 +37,7 @@ import Vue from 'vue';
 import store from "../store/index";
 import axios from 'axios'
 import moment from 'moment'
+import VueLoaders from 'vue-loaders';
 
 
   export default Vue.extend({
@@ -42,7 +46,8 @@ import moment from 'moment'
     return {
       state: store.state,
       mensagens: [],
-      mensagem: 'Solicito atendimento via app'
+      mensagem: 'Solicito atendimento via app',
+      loader: true,
     };
   },
 
@@ -148,6 +153,8 @@ import moment from 'moment'
       })
 
       store.state.atendimento = response.data.ResponseJSONData[0].Column1;
+
+      this.loader = false;
 
       await axios.post(store.state.baseURLSrv, {
 
@@ -313,6 +320,27 @@ import moment from 'moment'
 
 .voltar-menu p {
   margin-left: 10px;
+}
+
+.principal {
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+}
+
+.principal #loader {
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.principal #mensagem-loader {
+
+  position: absolute;
+  top: 50%;
+  left: 20%;
+
 }
 
 </style>
