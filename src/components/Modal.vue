@@ -63,7 +63,26 @@
       }
     },
 
+    created(){
+      navigator.geolocation.getCurrentPosition(this.success);
+    },
+
     methods: {
+
+
+      success(pos) {
+        const crd = pos.coords;
+
+
+
+
+
+        this.state.latitude = crd.latitude;
+        this.state.longitude = crd.longitude;
+        
+
+      },
+
       async submitLogin(){
 
           this.loader = true;
@@ -135,7 +154,8 @@
             store.state.tickets = ticketsResponse.data.ResponseJSONData;
             store.state.nome = ticketsResponse.data.ResponseJSONData[0].nome
             store.state.loginState = true;
-            this.modal = false;            
+            store.state.userData.cpf = this.cpf;
+            this.modal = false;           
           } 
 
 

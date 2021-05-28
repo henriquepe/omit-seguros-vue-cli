@@ -15,10 +15,10 @@
 
     <div class="conversa-chat-atendente">
 
-      <div v-for="mensagensGravadas in mensagens" :key="mensagensGravadas" class="mensagem-cliente">
-        <strong class="nome-chat">Você</strong>
-        <p class="mensagem-chat">{{mensagensGravadas}}</p>
-        <p class="data-chat">{{dateNow}}</p>
+      <div v-show="mensagensGravadas.at_externo !== 'N'" v-bind:class="mensagensGravadas['operador/depto'] === 'PREMIUM ASSISTANCE - T.I INFORMÁTICA' ? 'mensagem-cliente' : 'mensagem-atendente'" v-for="mensagensGravadas in mensagens" :key="mensagensGravadas.id_obs" class="mensagem-cliente">
+        <strong class="nome-chat">{{mensagensGravadas['operador/depto'] === 'PREMIUM ASSISTANCE - T.I INFORMÁTICA' ? 'Você' : 'Atendente'}}</strong>
+        <p class="mensagem-chat">{{mensagensGravadas.ds_obs}}</p>
+        <p class="data-chat">{{convertDate(mensagensGravadas.dh_inclusao)}}</p>
       </div>
 
     </div>
@@ -37,7 +37,6 @@ import Vue from 'vue';
 import store from "../store/index";
 import axios from 'axios'
 import moment from 'moment'
-import VueLoaders from 'vue-loaders';
 
 
   export default Vue.extend({
@@ -48,6 +47,8 @@ import VueLoaders from 'vue-loaders';
       mensagens: [],
       mensagem: 'Solicito atendimento via app',
       loader: true,
+      latitude: '',
+      longitude: ''
     };
   },
 
@@ -56,14 +57,17 @@ import VueLoaders from 'vue-loaders';
       return moment().format('DD/MM/YYYY h:mm')
     },
   },
+
   methods: {
     handleChangePage(){
       this.$router.replace({ path: "/atendimento", name: 'Atendimento' });
     },
 
-    async adicionarMensagem(){
+    convertDate(date) {
+      return moment(date).format('DD/MM/YYYY h:mm')
+    },
 
-      this.mensagens.push(this.mensagem);
+    async adicionarMensagem(){
 
       await axios.post(store.state.baseURLSrv, {
 
@@ -80,22 +84,77 @@ import VueLoaders from 'vue-loaders';
           ]
       })
 
-
-      console.log(this.mensagens);
-
       this.mensagem = ''
 
-      localStorage.setItem('@mensagens-usuario', JSON.stringify(this.mensagens));
+      const historicoConversa = await axios.post(store.state.baseURLSrv, {
 
+        "SessionID": store.state.sessionData.sessionID,
+        "screenIdentification": "SASSA53",
+          "Parameters": [
+		        { "parametername": "ve_id_chamado", "parametervalue": this.state.atendimento }
+
+	        ]
+      })
+
+      historicoConversa.data.ResponseJSONData.map((item, index) => this.mensagens.splice(index, 1, item));
+
+      this.mensagens = this.mensagens.reverse();
+
+
+    },
+
+    success(pos) {
+      const crd = pos.coords;
+
+
+
+
+
+      this.state.latitude = crd.latitude;
+      this.state.longitude = crd.longitude;
+      
 
     }
+
   },
 
   async created() {
 
-      this.mensagem = 'Solicito atendimento via app';
+    navigator.geolocation.getCurrentPosition(this.success);
 
-      this.mensagens.push(this.mensagem);
+    setInterval(async () => {
+
+      const historicoConversa = await axios.post(store.state.baseURLSrv, {
+
+        "SessionID": store.state.sessionData.sessionID,
+        "screenIdentification": "SASSA53",
+          "Parameters": [
+		        { "parametername": "ve_id_chamado", "parametervalue": this.state.atendimento }
+
+	        ]
+      })
+
+      historicoConversa.data.ResponseJSONData.map((item, index) => this.mensagens.splice(index, 1, item));
+
+      this.mensagens = this.mensagens.reverse();
+    }, 10000)
+
+    
+
+      const data = await axios.post(store.state.baseURLSrv, {
+        "SessionID": store.state.sessionData.sessionID,
+        "screenIdentification": "SASVJ0146",
+        "Parameters": [ 
+          {"parametername":"cpf", "parametervalue": `${this.state.userData.cpf}`}
+        ]
+      })
+
+
+      const voucher = data.data.ResponseJSONData[0].nr_Voucher;
+
+      this.mensagem = `Solicito atendimento via app`;
+
+      // this.mensagens.push(this.mensagem);
 
       const response = await axios.post(store.state.baseURLSrv, {
 
@@ -127,7 +186,7 @@ import VueLoaders from 'vue-loaders';
 
           "parametername": "cd_cliente",
 
-          "parametervalue": "1576362"
+          "parametervalue": `${voucher}`
 
           },
           {
@@ -139,7 +198,7 @@ import VueLoaders from 'vue-loaders';
           {
 
           "parametername": "ds_obs",
-          "parametervalue": "solicito atendimento via app"
+          "parametervalue": `solicito atendimento via app \n https://www.google.com/maps/search/?api=1&query=${this.state.latitude},${this.state.longitude}` 
 
           },
           {
@@ -156,20 +215,20 @@ import VueLoaders from 'vue-loaders';
 
       this.loader = false;
 
-      await axios.post(store.state.baseURLSrv, {
+      // await axios.post(store.state.baseURLSrv, {
 
-        "SessionID": store.state.sessionData.sessionID,
-        "screenIdentification": "SASSA56",
-          "Parameters": [
-            {"parametername": "ve_id_atendimento","parametervalue": "0"},
-            {"parametername": "ve_id_chamado","parametervalue": store.state.atendimento},
-            {	"parametername": "ve_cd_operador","parametervalue": "1053"},
-            {"parametername": "ve_ds_obs",
-            "parametervalue": `${this.mensagem}`},
+      //   "SessionID": store.state.sessionData.sessionID,
+      //   "screenIdentification": "SASSA56",
+      //     "Parameters": [
+      //       {"parametername": "ve_id_atendimento","parametervalue": "0"},
+      //       {"parametername": "ve_id_chamado","parametervalue": store.state.atendimento},
+      //       {	"parametername": "ve_cd_operador","parametervalue": "1053"},
+      //       {"parametername": "ve_ds_obs",
+      //       "parametervalue": `${this.mensagem}`},
 
-            {"parametername": "ve_at_externo","parametervalue": "S"}
-          ]
-      })
+      //       {"parametername": "ve_at_externo","parametervalue": "S"}
+      //     ]
+      // })
 
 
 
@@ -267,7 +326,7 @@ import VueLoaders from 'vue-loaders';
 
   padding: 10px;
 
-  margin-left: 30px;
+  margin-left: 90px;
 
   margin-top: 20px;
 
