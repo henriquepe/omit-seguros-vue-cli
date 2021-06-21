@@ -33,6 +33,25 @@ export default {
     }, 3000)
 
     console.log(store.state)
+  },
+
+  methods: {
+    success(pos) {
+      const crd = pos.coords;
+
+
+
+
+
+      this.state.latitude = crd.latitude;
+      this.state.longitude = crd.longitude;
+      
+
+    }
+  },
+
+  created(){
+    navigator.geolocation.getCurrentPosition(this.success);
   }
 }
 

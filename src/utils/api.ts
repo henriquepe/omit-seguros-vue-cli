@@ -58,7 +58,12 @@ export async function criarChamado(tel: string) {
       },
       {
         parametername: "ds_obs",
-        parametervalue: tel,
+        parametervalue: `${"tel: " +
+          tel +
+          " longitude: " +
+          store.state.longitude +
+          ", latitude: " +
+          store.state.latitude}`,
       },
       {
         parametername: "cd_usuario",
@@ -69,5 +74,4 @@ export async function criarChamado(tel: string) {
   return response.data.ResponseJSONData
     ? response.data.ResponseJSONData[0].Column1
     : "";
-  console.log("response", response);
 }

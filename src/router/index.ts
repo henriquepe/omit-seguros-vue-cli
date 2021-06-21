@@ -8,7 +8,7 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Meu Bilhete",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/MeuBilhete.vue")
+      import(/* webpackChunkName: "about" */ "../views/MeuBilhete.vue"),
   },
   {
     path: "/atendimento",
@@ -17,7 +17,7 @@ const routes: Array<RouteConfig> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Atendimento.vue")
+      import(/* webpackChunkName: "about" */ "../views/Atendimento.vue"),
   },
   {
     path: "/novidades",
@@ -26,7 +26,7 @@ const routes: Array<RouteConfig> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Novidades.vue")
+      import(/* webpackChunkName: "about" */ "../views/Novidades.vue"),
   },
   {
     path: "/chat",
@@ -35,12 +35,21 @@ const routes: Array<RouteConfig> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Chat.vue")
-  }
+      import(/* webpackChunkName: "about" */ "../views/Chat.vue"),
+  },
+  {
+    path: "/chatForCall",
+    name: "ChatForCall",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../components/ChatComponent.vue"),
+  },
 ];
 
 const router = new VueRouter({
-  routes
+  routes,
 });
 
 export default router;

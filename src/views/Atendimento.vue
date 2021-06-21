@@ -1,7 +1,7 @@
 <template>
   <div id="attendence-div">
     <menu-component />
-    <div v-if="state.loginState" class="omintPage">
+    <!-- <div v-if="state.loginState" class="omintPage">
       <a v-on:click="getAtendimento" class="begin-attendance">
         <p class="withoutPadding">Iniciar novo atendimento</p>
       </a>
@@ -10,15 +10,10 @@
       <button class="begin-attendance omintPage-disabled" disabled>
         <p class="withoutPadding">Iniciar novo atendimento</p>
       </button>
-    </div>
+    </div> -->
 
-    <inModal v-show="isInModalVisible" @close="closeInModal"/>
-    <modalLogin v-show="isModalVisible"
-      @close="closeModal"/>
-
-
-
-
+    <inModal v-show="isInModalVisible" @close="closeInModal" />
+    <modalLogin v-show="isModalVisible" @close="closeModal" />
   </div>
 </template>
 
@@ -26,18 +21,16 @@
 import Vue from "vue";
 import Menu from "../components/Menu.vue";
 import Modal from "../components/Modal.vue";
-import inModal from '../components/InModal.vue';
-
+import inModal from "../components/InModal.vue";
 
 import store from "../store/index";
-
 
 export default Vue.extend({
   name: "Atendimento",
   components: {
     "menu-component": Menu,
-    "modalLogin": Modal,
-    "inModal": inModal
+    modalLogin: Modal,
+    inModal: inModal,
   },
   data() {
     return {
@@ -45,12 +38,11 @@ export default Vue.extend({
       state: store.state,
       isModalVisible: false,
       inModal: false,
-      isInModalVisible: false
-
+      isInModalVisible: false,
     };
   },
-  created(){
-    if(!this.state.loginState){
+  created() {
+    if (!this.state.loginState) {
       this.isModalVisible = true;
     }
   },
@@ -60,41 +52,37 @@ export default Vue.extend({
       this.$router.replace({ path: "/chat" });
     },
     closeModal() {
-
       this.isModalVisible = false;
 
-      this.isModalVisible === false ? this.openInModal() : '';
-
-
+      this.isModalVisible === false ? this.openInModal() : "";
     },
-    closeInModal(){
-
-      this.isInModalVisible = false
-
+    closeInModal() {
+      this.isInModalVisible = false;
     },
-    openInModal(){
-      this.state.loginState ? this.isInModalVisible = true : this.isModalVisible = true
+    openInModal() {
+      this.state.loginState
+        ? (this.isInModalVisible = true)
+        : (this.isModalVisible = true);
     },
 
-    getAtendimento(){
-      this.$router.replace({ path: '/chat' })
+    getAtendimento() {
+      this.$router.replace({ path: "/chat" });
     },
 
-    InModal(){
-      if(this.state.loginState){
+    InModal() {
+      if (this.state.loginState) {
         return true;
-      }
-      else {
+      } else {
         return false;
       }
-    }
+    },
   },
 });
 </script>
 
 <style scoped>
-.withoutPadding{
-  padding-top:0px !important;
+.withoutPadding {
+  padding-top: 0px !important;
 }
 .omintPage {
   display: flex;
@@ -187,7 +175,6 @@ input {
 }
 
 .omintPage-disabled {
-
   opacity: 0.8;
   display: flex;
   justify-content: center;

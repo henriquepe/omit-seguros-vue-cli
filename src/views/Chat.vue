@@ -103,24 +103,15 @@ import moment from 'moment'
 
     },
 
-    success(pos) {
-      const crd = pos.coords;
-
-
-
-
-
-      this.state.latitude = crd.latitude;
-      this.state.longitude = crd.longitude;
-      
-
-    }
+    
 
   },
 
   async created() {
 
-    navigator.geolocation.getCurrentPosition(this.success);
+    console.log('latitude', this.state.latitude);
+
+    console.log('longitude', this.state.longitude);
 
     setInterval(async () => {
 
