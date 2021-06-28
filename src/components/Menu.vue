@@ -25,8 +25,8 @@
     </div>
 
     <div class="menu-list">
-      <a @click.prevent="showModal('meubilhete')">Meu Bilhete</a>
-      <a @click.prevent="showModal('atendimento')">Atendimento</a>
+      <!-- <a @click.prevent="showModal('meubilhete')">Meu Bilhete</a>
+      <a @click.prevent="showModal('atendimento')">Atendimento</a> -->
     </div>
     <modalLogin v-show="isModalVisible" @close="closeModal" />
 
@@ -54,7 +54,7 @@
             "
           >
             <p>No Brasil</p>
-            <p>0800 727 3002 <span>l</span></p>
+            <p>0800 727 3002</p>
           </a>
           <a
             href="tel:00551121324278"
@@ -65,7 +65,7 @@
             "
           >
             <p>No Exterior</p>
-            <p>00 55 11 21324278 <span>l</span></p>
+            <p>00 55 11 21324278</p>
           </a>
           <a
             v-on:click="showCallModal"
@@ -78,7 +78,7 @@
             <div style="display: flex; flex-direction: column;">
               <p>No Brasil<br />No Exterior</p>
             </div>
-            <p>Quero que me ligue<span>l</span></p>
+            <p>Quero que me ligue</p>
           </a>
           <a
             v-on:click="goToChat"
@@ -91,7 +91,7 @@
             <div style="display: flex; flex-direction: column;">
               <p>No Brasil<br />No Exterior</p>
             </div>
-            <p>Por mensagem<span></span></p>
+            <p>Por mensagem</p>
           </a>
         </div>
       </transition>

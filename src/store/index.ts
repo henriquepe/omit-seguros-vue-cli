@@ -7,9 +7,9 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     baseURL: "https://flt-sas.omintseguros.com.br/api/SASData/Get_V2",
-    baseURLSrv: "https://sas-hml.omintseguros.com.br/api/SASData/Get_V2",
+    baseURLSrv: "https://app-sas.omintseguros.com.br/api/SASData/Get_V2",
     baseURLProd: "https://flt-sas.omintseguros.com.br/api/SASData/Get_V2",
-    baseURLSrvProd: "https://app-sas.omintseguros.com.br/api/SASData/Get_V2",
+    baseURLSrvProd: "https://sas-hml.omintseguros.com.br/api/SASData/Get_V2",
     userData: {
       cpf: "",
       data: null || "",
@@ -27,8 +27,8 @@ export default new Vuex.Store({
     arrayValue: 0,
     atendimento: "",
     nomeUsuario: "",
-    latitude: '',
-    longitude: ''
+    latitude: "",
+    longitude: "",
   },
 
   actions: {},

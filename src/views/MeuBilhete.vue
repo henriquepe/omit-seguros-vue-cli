@@ -4,17 +4,23 @@
     <div v-if="!this.state.loginState" class="ticket-div">
       <p>Nenhum Bilhete Localizado.</p>
     </div>
-    <div class="bilhete-container" v-if="this.state.loginState && this.state.tickets">
-      <h6 >{{ this.state.nome }}</h6>
-      <div style="width:90%" v-for="(item, index) in state.tickets" v-bind:key="index">
-        <div >
+    <div
+      class="bilhete-container"
+      v-if="this.state.loginState && this.state.tickets"
+    >
+      <h6>{{ this.state.nome }}</h6>
+      <div
+        style="width:90%"
+        v-for="(item, index) in state.tickets"
+        v-bind:key="index"
+      >
+        <div>
           <div class="bilhete-box">
             <p class="numero-proposta">nº {{ item.bilhete }}</p>
             <p class="dados-proposta">PLANO: {{ item.Producto }}</p>
             <p class="dados-proposta">
               VIGÊNCIA:
-              {{ moment(item.dataInicioViagem).format("DD/MM/YYYY") }} ATÉ
-              {{ moment(item.dataNascimento).format("DD/MM/YYYY") }}
+              {{ moment(item.dataInicioViagem).format("DD/MM/YYYY") }}
             </p>
 
             <button
@@ -27,85 +33,72 @@
           </div>
         </div>
       </div>
-
     </div>
-    <inModal v-show="isInModalVisible" @close="closeInModal"/>
-    <modalLogin v-show="isModalVisible"
-      @close="closeModal"/>
+    <inModal v-show="isInModalVisible" @close="closeInModal" />
+    <modalLogin v-show="isModalVisible" @close="closeModal" />
   </div>
-
 </template>
 
 <script lang="ts">
-
-
-
 interface BilheteProps {
   bilhete: string;
   numeropassageiro: number;
-
 }
 
 import Vue from "vue";
 import Menu from "../components/Menu.vue";
 import store from "../store/";
-import inModal from '../components/InModal.vue';
+import inModal from "../components/InModal.vue";
 import Modal from "../components/Modal.vue";
-import  moment from "moment";
+import moment from "moment";
 
 export default Vue.extend({
   name: "Meu Bilhete",
   components: {
     "menu-component": Menu,
-    "modalLogin": Modal,
-    "inModal": inModal
+    modalLogin: Modal,
+    inModal: inModal,
   },
-  created(){
-    if(!this.state.loginState){
+  created() {
+    if (!this.state.loginState) {
       this.isModalVisible = true;
-      console.log(this.state)
+      console.log(this.state);
     }
   },
   methods: {
     abrirBilhete: async function(id: number) {
       //const arrayValue = (store.state.arrayValue = value);
       //await verBilhete(store.state);
-      console.log(id)
+      console.log(id);
 
-      if(this.state.tickets){
-        const bilheteIndex = this.state.tickets[id] as unknown as BilheteProps;
-        console.log(bilheteIndex)
-        const urlBilhete = `http://srvseg-homolog.omintseguroviagem.com.br:7220/${bilheteIndex.bilhete}0${bilheteIndex.numeropassageiro}.pdf`
-        console.log(urlBilhete)
+      if (this.state.tickets) {
+        const bilheteIndex = (this.state.tickets[
+          id
+        ] as unknown) as BilheteProps;
+        console.log(bilheteIndex);
+        const urlBilhete = `http://srvseg-homolog.omintseguroviagem.com.br:7220/${bilheteIndex.bilhete}0${bilheteIndex.numeropassageiro}.pdf`;
+        console.log(urlBilhete);
         setTimeout(() => window.open(urlBilhete), 1000);
       }
-
     },
     closeModal() {
-
-
-
       setTimeout(() => {
         this.isModalVisible = false;
-
-
-      }, 2000)
+      }, 2000);
 
       setTimeout(() => {
         this.openInModal();
-      }, 2000)
-
-
-
+      }, 2000);
     },
-    closeInModal(){
-      this.isInModalVisible = false
+    closeInModal() {
+      this.isInModalVisible = false;
     },
-    openInModal(){
-      this.state.loginState ? this.isInModalVisible = true : this.isModalVisible = true
+    openInModal() {
+      this.state.loginState
+        ? (this.isInModalVisible = true)
+        : (this.isModalVisible = true);
     },
   },
-
 
   data() {
     return {
@@ -115,7 +108,7 @@ export default Vue.extend({
       moment: moment,
       isModalVisible: false,
       inModal: false,
-      isInModalVisible: false
+      isInModalVisible: false,
     };
   },
   // updated: function() {
@@ -181,7 +174,7 @@ h6 {
   color: #fff;
   font-size: 16px;
   font-weight: bold;
-  background-color: #00316B;
+  background-color: #00316b;
   transition: opacity 0.2s;
 }
 

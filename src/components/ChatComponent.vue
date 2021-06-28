@@ -13,7 +13,7 @@
         <div class="chat-header">
           <button
             class="voltar-menu"
-            v-on:click="$router.replace({ name: 'Atendimento' })"
+            v-on:click="$router.replace({ path: '/' })"
           >
             Voltar
           </button>

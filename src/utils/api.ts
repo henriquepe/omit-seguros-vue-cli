@@ -28,6 +28,16 @@ export async function verBilhete(state: any) {
 }
 
 export async function criarChamado(tel: string) {
+  const data = await axios.post(store.state.baseURLSrv, {
+    SessionID: store.state.sessionData.sessionID,
+    screenIdentification: "SASVJ0146",
+    Parameters: [
+      { parametername: "cpf", parametervalue: `${store.state.userData.cpf}` },
+    ],
+  });
+
+  const voucher = data.data.ResponseJSONData[0].nr_Voucher;
+
   const response = await axios.post(store.state.baseURLSrv, {
     SessionID: store.state.sessionData.sessionID,
     screenIdentification: "SASSA55",
@@ -50,7 +60,7 @@ export async function criarChamado(tel: string) {
       {
         parametername: "cd_cliente",
 
-        parametervalue: "1576362",
+        parametervalue: `${voucher}`,
       },
       {
         parametername: "id_classifica",
