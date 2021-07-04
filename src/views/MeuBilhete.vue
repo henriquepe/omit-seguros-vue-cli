@@ -166,7 +166,6 @@ h6 {
 }
 
 .botao {
-  width: 100%;
   text-align: center;
   padding: 10px;
   border: 0;

@@ -3,7 +3,11 @@
     <div v-show="responseChamado === ''" class="modal">
       <h1>Quero que me ligue</h1>
       <p class="pStyle">Telefone completo</p>
-      <input class="inputStyle" v-model="telefone" />
+      <input
+        class="inputStyle"
+        placeholder="(+55 ou código do País) + (Número)"
+        v-model="telefone"
+      />
       <div id="erro">
         <p v-show="erro">{{ erro }}</p>
       </div>
@@ -11,7 +15,7 @@
         <vue-loaders-ball-beat color="#00316B"></vue-loaders-ball-beat>
       </div>
       <button
-        v-bind:disabled="telefone === null"
+        v-bind:disabled="telefone === null || this.loader"
         class="buttonStyle"
         @click="submitCall"
       >
